@@ -1,0 +1,18 @@
+{
+    "name": "QonversionIntegration",
+    "alias": "qonversionintegration",
+    "description": "Display customer subscription details from Qonversion in the conversation sidebar",
+    "keywords": [
+        "qonversion",
+        "subscription",
+        "integration"
+    ],
+    "active": 1,
+    "order": 1000,
+    "providers": [
+        "Modules\\QonversionIntegration\\Providers\\QonversionIntegrationServiceProvider"
+    ],
+    "aliases": {},
+    "files": [],
+    "requires": []
+}

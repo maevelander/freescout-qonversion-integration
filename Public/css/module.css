@@ -1,0 +1,48 @@
+/* Qonversion Sidebar Block Styling */
+.qonversion-block .sidebar-block-header {
+    padding-left: 15px;
+}
+
+.qonversion-block .sidebar-block-body {
+    padding: 15px;
+}
+
+.qonv-field {
+    margin-bottom: 12px;
+}
+
+.qonv-label {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.qonv-value {
+    font-size: 13px;
+    color: #333;
+    line-height: 1.4;
+}
+
+.qonv-divider {
+    margin: 15px 0;
+    border-top: 1px solid #e5e5e5;
+}
+
+.qonv-subscription-detail {
+    padding: 8px 0;
+    border-left: 3px solid #5cb85c;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
+
+.qonv-dashboard-link {
+    margin-top: 15px;
+}
+
+.qonversion-block .label {
+    font-size: 11px;
+    padding: 4px 8px;
+}

@@ -1,0 +1,31 @@
+# IDE and editor files
+.vscode/
+.idea/
+*.sublime-*
+
+# Claude Code local settings
+.claude/
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Logs
+*.log
+
+# Dependency directories
+vendor/
+node_modules/
+
+# Environment and config files with secrets
+.env
+.env.*
+*.local.json
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*~
