@@ -43,14 +43,11 @@ class QonversionApiService
 
             $userId = $identity['user_id'];
 
-            // Step 2: Get all customer data concurrently
-            $results = $this->fetchUserDataConcurrently($userId);
-            $user = $results['user'];
-            $properties = $results['properties'];
-            $entitlements = $results['entitlements'];
+            // Step 2: Fetch entitlements
+            $entitlements = $this->fetchEntitlements($userId);
 
             // Step 3: Parse and structure the data
-            $data = $this->parseCustomerData($user, $properties, $entitlements);
+            $data = $this->parseCustomerData($entitlements);
 
             // Add the Qonversion User ID to the returned data
             $data['qonversion_user_id'] = $userId;
@@ -79,110 +76,37 @@ class QonversionApiService
     }
 
     /**
-     * Fetch user, properties, and entitlements sequentially
+     * Fetch user entitlements
      */
-    protected function fetchUserDataConcurrently($userId)
+    protected function fetchEntitlements($userId)
     {
-        $results = [
-            'user' => null,
-            'properties' => null,
-            'entitlements' => [],
-        ];
-
-        // Fetch user data
-        try {
-            $response = $this->client->get("users/{$userId}");
-            $results['user'] = json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            // User data fetch failed, continue with other data
-        }
-
-        // Fetch properties
-        try {
-            $response = $this->client->get("users/{$userId}/properties");
-            $results['properties'] = json_decode($response->getBody(), true);
-        } catch (\Exception $e) {
-            // Properties fetch failed, continue with other data
-        }
-
-        // Fetch entitlements
         try {
             $response = $this->client->get("users/{$userId}/entitlements");
-            $results['entitlements'] = json_decode($response->getBody(), true);
+            return json_decode($response->getBody(), true);
         } catch (\Exception $e) {
-            // Entitlements fetch failed, continue with other data
+            return [];
         }
-
-        return $results;
     }
 
     /**
-     * Parse raw API data into structured customer information
+     * Parse entitlements into structured customer information
      */
-    protected function parseCustomerData($user, $properties, $entitlements)
+    protected function parseCustomerData($entitlements)
     {
         $data = [
-            'country' => null,
             'platform' => null,
-            'platform_version' => null,
-            'device_make' => null,
-            'device_model' => null,
-            'app_version' => null,
             'subscription_status' => 'None',
             'subscription_details' => []
         ];
 
-        // Parse user properties for device/app info
-        // Qonversion SDK stores these as standard properties
-        if ($properties && isset($properties['properties'])) {
-            foreach ($properties['properties'] as $property) {
-                $key = $property['key'] ?? '';
-                $value = $property['value'] ?? '';
-
-                switch (strtolower($key)) {
-                    case '_q_country':
-                    case 'country':
-                        $data['country'] = $value;
-                        break;
-                    case '_q_platform':
-                    case 'platform':
-                        $data['platform'] = $this->formatPlatform($value);
-                        break;
-                    case '_q_os_version':
-                    case 'os_version':
-                    case 'osversion':
-                        $data['platform_version'] = $value;
-                        break;
-                    case '_q_device':
-                    case 'device':
-                    case 'device_model':
-                        $data['device_model'] = $value;
-                        break;
-                    case '_q_device_manufacturer':
-                    case 'device_manufacturer':
-                    case 'manufacturer':
-                        $data['device_make'] = $value;
-                        break;
-                    case '_q_app_version':
-                    case 'app_version':
-                    case 'version':
-                        $data['app_version'] = $value;
-                        break;
-                }
-            }
-        }
-
-        // If we still don't have platform from properties, try to detect from entitlements source
-        if (!$data['platform'] && $entitlements && isset($entitlements['data']) && count($entitlements['data']) > 0) {
-            // Get platform from the most recent entitlement's source
+        // Get platform from entitlements source
+        if ($entitlements && isset($entitlements['data']) && count($entitlements['data']) > 0) {
             $latestEntitlement = $entitlements['data'][0];
             if (isset($latestEntitlement['source'])) {
                 $data['platform'] = $this->formatPlatform($latestEntitlement['source']);
             }
-        }
 
-        // Parse subscription status from entitlements
-        if ($entitlements && isset($entitlements['data']) && count($entitlements['data']) > 0) {
+            // Parse subscription status
             $activeEntitlements = array_filter($entitlements['data'], function($ent) {
                 return isset($ent['active']) && $ent['active'] === true;
             });

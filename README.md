@@ -1,10 +1,8 @@
 # Qonversion Integration for FreeScout
 
-A FreeScout module that displays customer subscription information from Qonversion directly in the conversation sidebar.
+A FreeScout module that displays customer subscription information from Qonversion directly in the FreeScout conversation sidebar, allowing support agents to view customer subscription details without leaving the help desk interface.
 
-## Overview
-
-This module integrates Qonversion subscription management with FreeScout, allowing support agents to view customer subscription details without leaving the help desk interface.
+![Example of the Qonversion customer profile data in the FreeScout sidebar.](qonversion-freescout-integration.png)
 
 ## Features
 
@@ -64,11 +62,9 @@ This module uses the customer's email address from FreeScout to query Qonversion
 ### API Flow
 
 1. Extract customer email from FreeScout conversation
-2. Query Qonversion Identity API: GET /v3/identities/{email}
-3. If found, fetch user details: GET /v3/users/{user_id}
-4. Fetch entitlements: GET /v3/users/{user_id}/entitlements
-5. Fetch user properties: GET /v3/users/{user_id}/properties
-6. Parse and display in sidebar
+2. Query Qonversion Identity API: `GET /v3/identities/{email}`
+3. If found, fetch entitlements: `GET /v3/users/{user_id}/entitlements`
+4. Parse subscription status and display in sidebar
 
 ## Troubleshooting
 
