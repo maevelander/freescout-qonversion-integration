@@ -54,7 +54,7 @@ class QonversionApiService
 
             return $data;
 
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error("Qonversion getCustomerData failed for {$email}: " . $e->getMessage());
             return null;
         }
@@ -68,7 +68,8 @@ class QonversionApiService
             $response = $this->client->get("identities/" . $encodedEmail);
             return json_decode($response->getBody(), true);
         } catch (RequestException $e) {
-            if ($e->hasResponse() && $e->getResponse()->getStatusCode() == 404) {
+            $response = $e->getResponse();
+            if ($response && $response->getStatusCode() == 404) {
                 return null;
             }
             throw $e;
